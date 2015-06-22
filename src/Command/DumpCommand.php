@@ -12,6 +12,7 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * DumpCommand
+ * Defines command execution and options
  *
  * @author DerStoffel <derstoffel@posteo.de>
  */
@@ -60,12 +61,9 @@ class DumpCommand extends Command
         $output->writeln('################## INSERT DATA ##################');
         // get data by tablename and columnnames
         foreach ($tableColumns as $table => $columns) {
-            $selectColumns = array();
-            foreach ($columns as $selectColumn) {
-                $selectColumns[] = '`' . $selectColumn['name'] . '`';
-            }
-            $sql = 'SELECT * FROM ' . $table;
             $output->writeln('Table: ' . $table);
+
+            $sql = 'SELECT * FROM ' . $table;
             $data = $sourceConnection->fetchAll($sql);
             $this->insertGoalTable($goal, $table, $data);
         }
@@ -86,7 +84,6 @@ class DumpCommand extends Command
         $goalConnection = $this->getConnection($goal);
         $goalConnection->beginTransaction();
         try {
-
             $columnString = '';
             foreach ($tableColumns as $column) {
                 $columnString .= '`' . $column['name'] . '` varchar(255),';

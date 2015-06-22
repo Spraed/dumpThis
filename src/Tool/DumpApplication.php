@@ -16,6 +16,8 @@ use Symfony\Component\Console\Input\InputInterface;
 class DumpApplication extends Application
 {
     /**
+     * add DumpCommand to available commands
+     *
      * @return array|\Symfony\Component\Console\Command\Command[]
      */
     protected function getDefaultCommands()
