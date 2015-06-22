@@ -33,6 +33,7 @@ class DumpCommand extends Command
      * @param OutputInterface $output
      *
      * @return int|null|void
+     * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -42,27 +43,58 @@ class DumpCommand extends Command
         // connect to mssql
         $sourceConnection = $this->getConnection($source);
         $sourceConnection->connect();
+
         // get tablenames
-        $tables = $sourceConnection->fetchAll('SELECT name, object_id FROM sys.Tables WHERE name = \'D_Adressen\' order by name');
-//        $tables = $sourceConnection->fetchAll('SELECT name, object_id FROM sys.Tables order by name');
-        // get column names per table
+//        $tables = $sourceConnection->fetchArray('SELECT name FROM sys.Tables WHERE name = \'D_Adressen\' order by name');
+        $tables = $sourceConnection->fetchAll('SELECT name, object_id FROM sys.Tables order by name');
+
+        // get columnnames
         $tableColumns = array();
         foreach ($tables as $table) {
-            $tableColumns[$table['name']] = $sourceConnection->fetchAll('SELECT name FROM sys.columns WHERE object_id = OBJECT_ID(\'' . $table['name'] . '\')');
+            $sql = 'SELECT name FROM sys.columns WHERE object_id = OBJECT_ID(\'' . $table . '\')';
+            $tableColumn = $sourceConnection->fetchArray($sql);
+            $this->createGoalTable($goal, $table, $tableColumn);
+            $tableColumns[$table] = $tableColumn;
         }
-        // get data
+
+        // get data by tablename and columnnames
         $tableData = array();
         foreach ($tableColumns as $table => $columns) {
-            $tableData[$table] = $sourceConnection->fetchAll('SELECT '.implode(',', $columns).' FROM ' . $table.' ');
+            $sql = 'SELECT ' . implode(',', $columns) . ' FROM ' . $table . '';
+            $tableData[$table] = $sourceConnection->fetchArray($sql);
         }
 
         $sourceConnection->close();
 
         // connect to mysql
-        $goalConnection = $this->getConnection($goal);
         // write tablenames
         // write column names per table
         // write data
+    }
+
+    private function createGoalTable($goal, $table, $tableColumns)
+    {
+        $goalConnection = $this->getConnection($goal);
+        $goalConnection->beginTransaction();
+        try {
+
+            $columnString = '';
+            foreach ($tableColumns as $column) {
+                $columnString .= $column . ' varchar(255),';
+            }
+
+            $columnString = substr_replace($columnString, '', -1);
+            $sql = 'CREATE TABLE ' . $table . ' (' . $columnString . ')';
+
+            $goalConnection->exec($sql);
+
+            $goalConnection->commit();
+        } catch (\Exception $e) {
+            $goalConnection->rollBack();
+            throw $e;
+        }
+
+        $goalConnection->close();
     }
 
     /**
