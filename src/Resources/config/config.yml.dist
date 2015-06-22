@@ -1,0 +1,18 @@
+doctrine:
+  dbal:
+    connections:
+      mssql:
+        driver_class:   Lsw\DoctrinePdoDblib\Doctrine\DBAL\Driver\PDODblib\Driver
+        host:     ~
+        dbname:   ~
+        user:     ~
+        password: ~
+        charset:  UTF8
+      mysql:
+        driver:   ~
+        host:     ~
+        port:     ~
+        dbname:   ~
+        user:     ~
+        password: ~
+        charset:  UTF8
