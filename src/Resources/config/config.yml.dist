@@ -2,7 +2,7 @@ doctrine:
   dbal:
     connections:
       mssql:
-        driver_class:   Lsw\DoctrinePdoDblib\Doctrine\DBAL\Driver\PDODblib\Driver
+        driverClass:   Lsw\DoctrinePdoDblib\Doctrine\DBAL\Driver\PDODblib\Driver
         host:     ~
         dbname:   ~
         user:     ~

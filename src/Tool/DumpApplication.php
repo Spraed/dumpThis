@@ -22,7 +22,7 @@ class DumpApplication extends Application
      */
     protected function getCommandName(InputInterface $input)
     {
-        return 'dump_this';
+        return 'spraed:dump';
     }
 
     /**

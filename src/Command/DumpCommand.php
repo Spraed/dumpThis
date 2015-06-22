@@ -41,12 +41,25 @@ class DumpCommand extends Command
 
         // connect to mssql
         $sourceConnection = $this->getConnection($source);
+        $sourceConnection->connect();
         // get tablenames
+        $tables = $sourceConnection->fetchAll('SELECT name, object_id FROM sys.Tables WHERE name = \'D_Adressen\' order by name');
+//        $tables = $sourceConnection->fetchAll('SELECT name, object_id FROM sys.Tables order by name');
         // get column names per table
+        $tableColumns = array();
+        foreach ($tables as $table) {
+            $tableColumns[$table['name']] = $sourceConnection->fetchAll('SELECT name FROM sys.columns WHERE object_id = OBJECT_ID(\'' . $table['name'] . '\')');
+        }
         // get data
+        $tableData = array();
+        foreach ($tableColumns as $table => $columns) {
+            $tableData[$table] = $sourceConnection->fetchAll('SELECT '.implode(',', $columns).' FROM ' . $table.' ');
+        }
+
+        $sourceConnection->close();
 
         // connect to mysql
-        $goalConnection = $this->getConnection($source);
+        $goalConnection = $this->getConnection($goal);
         // write tablenames
         // write column names per table
         // write data
@@ -59,7 +72,7 @@ class DumpCommand extends Command
      */
     private function getConnection($config)
     {
-        $array = Yaml::parse(file_get_contents(__DIR__ . '../Resources/config/config.yml'));
+        $array = Yaml::parse(file_get_contents(__DIR__ . '/../Resources/config/config.yml'));
 
         $connectionParams = $array['doctrine']['dbal']['connections'][$config];
 

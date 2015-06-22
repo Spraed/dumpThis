@@ -3,6 +3,11 @@
     "license": "MIT",
     "type": "project",
     "description": "dumps mssql to mysql",
+    "autoload": {
+        "psr-4": {
+            "Spraed\\DumpThis\\": "src/"
+        }
+    },
     "require": {
         "php": ">=5.3.9",
         "doctrine/dbal": "<2.5",
