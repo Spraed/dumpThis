@@ -10,6 +10,14 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // import the Symfony Console Application
 use Spraed\DumpThis\Tool\DumpApplication;
 
-$app = new DumpApplication();
-$app->run();
+// $app = new DumpApplication();
+// $app->run();
+
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\ArgvInput;
+
+$input = new ArgvInput();
+
+$application = new DumpApplication();
+$application->run($input);
 ?>

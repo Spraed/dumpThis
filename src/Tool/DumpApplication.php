@@ -16,16 +16,6 @@ use Symfony\Component\Console\Input\InputInterface;
 class DumpApplication extends Application
 {
     /**
-     * @param InputInterface $input
-     *
-     * @return string
-     */
-    protected function getCommandName(InputInterface $input)
-    {
-        return 'spraed:dump';
-    }
-
-    /**
      * @return array|\Symfony\Component\Console\Command\Command[]
      */
     protected function getDefaultCommands()
@@ -35,18 +25,6 @@ class DumpApplication extends Application
         $defaultCommands[] = new DumpCommand();
 
         return $defaultCommands;
-    }
-
-    /**
-     * @return \Symfony\Component\Console\Input\InputDefinition
-     */
-    public function getDefinition()
-    {
-        $inputDefinition = parent::getDefinition();
-
-        $inputDefinition->setArguments();
-
-        return $inputDefinition;
     }
 }
  
