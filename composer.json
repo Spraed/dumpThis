@@ -1,0 +1,11 @@
+{
+    "name": "spraed/dumpThis",
+    "license": "MIT",
+    "type": "project",
+    "description": "dumps mssql to mysql",
+    "require": {
+        "php": ">=5.3.9",
+        "doctrine/dbal": "<2.5",
+        "symfony/yaml": "2.7.1"
+    }
+}
