@@ -48,6 +48,7 @@ class DumpCommand extends Command
         $tables = $sourceConnection->fetchAll('SELECT name FROM sys.Tables order by name');
 
         // get columnnames
+        $output->writeln('################## CREATE SCHEMA ##################');
         $tableColumns = array();
         foreach ($tables as $table) {
             $sql = 'SELECT name FROM sys.columns WHERE object_id = OBJECT_ID(\'' . $table['name'] . '\')';
@@ -56,28 +57,31 @@ class DumpCommand extends Command
             $tableColumns[$table['name']] = $tableColumn;
         }
 
+        $output->writeln('################## INSERT DATA ##################');
         // get data by tablename and columnnames
-        $tableData = array();
         foreach ($tableColumns as $table => $columns) {
             $selectColumns = array();
             foreach ($columns as $selectColumn) {
-                $selectColumns[] = '\'' . $selectColumn['name'] . '\'';
+                $selectColumns[] = '`' . $selectColumn['name'] . '`';
             }
-            $sql = 'SELECT ' . implode(',', $selectColumns) . ' FROM ' . $table;
-
+            $sql = 'SELECT * FROM ' . $table;
             $output->writeln('Table: ' . $table);
-            $tableData[$table] = $sourceConnection->fetchAll($sql);
+            $data = $sourceConnection->fetchAll($sql);
+            $this->insertGoalTable($goal, $table, $data);
         }
 
         $sourceConnection->close();
-
-        // connect to mysql
-        // write tablenames
-        // write column names per table
-        // write data
+        $output->writeln('################## DONE ##################');
     }
 
-    private function createGoalTable($goal, $table, $tableColumns)
+    /**
+     * @param string $goal
+     * @param string $table
+     * @param array  $tableColumns
+     *
+     * @throws \Exception
+     */
+    private function createGoalTable($goal, $table, array $tableColumns)
     {
         $goalConnection = $this->getConnection($goal);
         $goalConnection->beginTransaction();
@@ -100,6 +104,45 @@ class DumpCommand extends Command
         }
 
         $goalConnection->close();
+    }
+
+    /**
+     * @param string $goal
+     * @param string $table
+     * @param array  $datas
+     *
+     * @throws \Exception
+     */
+    private function insertGoalTable($goal, $table, array $datas)
+    {
+        if (0 < count($datas)) {
+            foreach ($datas as $data) {
+                $goalConnection = $this->getConnection($goal);
+                $goalConnection->beginTransaction();
+                try {
+                    $columnString = '';
+                    $valueString = '';
+
+                    foreach ($data as $key => $value) {
+                        $columnString .= '`' . $key . '`,';
+                        $valueString .= $goalConnection->quote($value) . ',';
+                    }
+
+                    $columnString = substr_replace($columnString, '', -1);
+                    $valueString = substr_replace($valueString, '', -1);
+                    $sql = 'INSERT INTO ' . $goalConnection->getDatabase() . '.' . $table . ' (' . $columnString . ') VALUES (' . $valueString . ')';
+
+                    $goalConnection->exec($sql);
+
+                    $goalConnection->commit();
+                } catch (\Exception $e) {
+                    $goalConnection->rollBack();
+                    throw $e;
+                }
+
+                $goalConnection->close();
+            };
+        }
     }
 
     /**
