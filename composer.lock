@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "76e01c27f72a64a32eaaeab4215ec849",
+    "hash": "20b0680b5576c99298c2aae7f0c4428d",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -468,23 +468,33 @@
             "time": "2014-09-09 13:34:57"
         },
         {
-            "name": "psr/log",
-            "version": "1.0.0",
+            "name": "leaseweb/doctrine-pdo-dblib",
+            "version": "1.0.2",
+            "target-dir": "Lsw/DoctrinePdoDblib",
             "source": {
                 "type": "git",
-                "url": "https://github.com/php-fig/log.git",
-                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b"
+                "url": "https://github.com/LeaseWeb/LswDoctrinePdoDblib.git",
+                "reference": "195c14b26f96bdc983503b349d19424512c96a19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/fe0936ee26643249e916849d48e3a51d5f5e278b",
-                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b",
+                "url": "https://api.github.com/repos/LeaseWeb/LswDoctrinePdoDblib/zipball/195c14b26f96bdc983503b349d19424512c96a19",
+                "reference": "195c14b26f96bdc983503b349d19424512c96a19",
                 "shasum": ""
             },
+            "require": {
+                "doctrine/dbal": ">=2.1.0",
+                "php": ">=5.3.2"
+            },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
             "autoload": {
                 "psr-0": {
-                    "Psr\\Log\\": ""
+                    "Lsw\\DoctrinePdoDblib": ""
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -493,17 +503,28 @@
             ],
             "authors": [
                 {
-                    "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
+                    "name": "Maurits van der Schee",
+                    "email": "m.vanderschee@leaseweb.com"
+                },
+                {
+                    "name": "Tyler Rooney",
+                    "email": "tyler@tylerrooney.ca"
+                },
+                {
+                    "name": "Razvan Tudorica",
+                    "email": "r.tudorica@ocom.com"
                 }
             ],
-            "description": "Common interface for logging libraries",
+            "description": "Library for support of the pdo_dblib (MSSQL) driver in Doctrine",
+            "homepage": "http://www.leaseweblabs.com",
             "keywords": [
-                "log",
-                "psr",
-                "psr-3"
+                "dblib",
+                "doctrine",
+                "mssql",
+                "pdo",
+                "pdo_dblib"
             ],
-            "time": "2012-12-21 11:40:51"
+            "time": "2014-05-20 07:59:05"
         },
         {
             "name": "symfony/console",
