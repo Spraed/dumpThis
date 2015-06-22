@@ -45,23 +45,28 @@ class DumpCommand extends Command
         $sourceConnection->connect();
 
         // get tablenames
-//        $tables = $sourceConnection->fetchArray('SELECT name FROM sys.Tables WHERE name = \'D_Adressen\' order by name');
-        $tables = $sourceConnection->fetchAll('SELECT name, object_id FROM sys.Tables order by name');
+        $tables = $sourceConnection->fetchAll('SELECT name FROM sys.Tables order by name');
 
         // get columnnames
         $tableColumns = array();
         foreach ($tables as $table) {
-            $sql = 'SELECT name FROM sys.columns WHERE object_id = OBJECT_ID(\'' . $table . '\')';
-            $tableColumn = $sourceConnection->fetchArray($sql);
-            $this->createGoalTable($goal, $table, $tableColumn);
-            $tableColumns[$table] = $tableColumn;
+            $sql = 'SELECT name FROM sys.columns WHERE object_id = OBJECT_ID(\'' . $table['name'] . '\')';
+            $tableColumn = $sourceConnection->fetchAll($sql);
+            $this->createGoalTable($goal, $table['name'], $tableColumn);
+            $tableColumns[$table['name']] = $tableColumn;
         }
 
         // get data by tablename and columnnames
         $tableData = array();
         foreach ($tableColumns as $table => $columns) {
-            $sql = 'SELECT ' . implode(',', $columns) . ' FROM ' . $table . '';
-            $tableData[$table] = $sourceConnection->fetchArray($sql);
+            $selectColumns = array();
+            foreach ($columns as $selectColumn) {
+                $selectColumns[] = '\'' . $selectColumn['name'] . '\'';
+            }
+            $sql = 'SELECT ' . implode(',', $selectColumns) . ' FROM ' . $table;
+
+            $output->writeln('Table: ' . $table);
+            $tableData[$table] = $sourceConnection->fetchAll($sql);
         }
 
         $sourceConnection->close();
@@ -80,11 +85,11 @@ class DumpCommand extends Command
 
             $columnString = '';
             foreach ($tableColumns as $column) {
-                $columnString .= $column . ' varchar(255),';
-            }
+                $columnString .= '`' . $column['name'] . '` varchar(255),';
+            };
 
             $columnString = substr_replace($columnString, '', -1);
-            $sql = 'CREATE TABLE ' . $table . ' (' . $columnString . ')';
+            $sql = 'CREATE TABLE ' . $goalConnection->getDatabase() . '.' . $table . ' (' . $columnString . ')';
 
             $goalConnection->exec($sql);
 
