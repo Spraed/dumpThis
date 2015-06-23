@@ -149,7 +149,7 @@ class DumpCommand extends Command
      */
     private function getConnection($config)
     {
-        $array = Yaml::parse(file_get_contents(__DIR__ . '/../Resources/config/config.yml'));
+        $array = Yaml::parse(file_get_contents(__DIR__ . '/../../app/config/config.yml'));
 
         $connectionParams = $array['doctrine']['dbal']['connections'][$config];
 
